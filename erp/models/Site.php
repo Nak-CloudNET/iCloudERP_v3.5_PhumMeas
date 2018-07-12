@@ -1793,10 +1793,17 @@ class Site extends CI_Model
 		}else{
 			$default_biller = $this->get_setting()->default_biller;
 		}
-		
+        if($field == 'cus'){
+            $q = $this->db->get('order_ref', 1);
+            if ($q->num_rows() > 0) {
+                $ref = $q->row();
+                $this->db->update('order_ref', array($field => $ref->{$field} + 1));
+                return TRUE;
+            }
+            return FALSE;
+        }
 		if($this->get_setting()->separate_ref == 1){
 			if($biller){
-				
 				if ($this->get_setting()->reference_format == 4 || $this->get_setting()->reference_format == 5) {
 					$q = $this->db->get_where('order_refs',array('biller_id'=>$biller), 1);
 					if ($q->num_rows() > 0) {
@@ -1835,7 +1842,6 @@ class Site extends CI_Model
 				}
 
             } else { // End no $biller
-				
 				if($field == 'cus'){
                     $q = $this->db->get('order_ref', 1);
 					if ($q->num_rows() > 0) {
@@ -1864,9 +1870,9 @@ class Site extends CI_Model
 			}
 
         } else { // End get_setting->separate_ref
-			
+
 			if ($this->get_setting()->reference_format == 4 || $this->get_setting()->reference_format == 5) {
-				
+
 				$q = $this->db->get_where('order_ref', array(''), 1);
 				if ($q->num_rows() > 0) {
 					$ref = $q->row();
